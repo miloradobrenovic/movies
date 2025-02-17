@@ -3,6 +3,7 @@ package com.example.movies.repository;
 import com.example.movies.model.Movie;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,17 +14,18 @@ import java.util.List;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
-    List<Movie> findTop10ByOrderByRatingDesc();
-
-    Page<Movie> findAllByOrderByRatingDesc(Pageable pageable);
+    Page<Movie> findTop50ByOrderByRatingDesc(Pageable pageable);
 
     List<Movie> findByTitleContainingIgnoreCase(String query);
 
-    @Query("SELECT m FROM Movie m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "AND (:genre IS NULL OR LOWER(m.genres) LIKE LOWER(CONCAT('%', :genre, '%')))")
-    Page<Movie> searchMovies(
+    @Query(value = "SELECT * FROM movies WHERE " +
+            "LOWER(title) LIKE LOWER(CONCAT('%', :query, '%')) AND " +
+            "(:genre IS NULL OR LOWER(genres) LIKE LOWER(CONCAT('%', :genre, '%'))) AND " +
+            "(:rating IS NULL OR rating >= :rating)",
+            nativeQuery = true)
+    List<Movie> searchMovies(
             @Param("query") String query,
             @Param("genre") String genre,
-            Pageable pageable);
-
+            @Param("rating") Double rating,
+            Sort sort);
 }

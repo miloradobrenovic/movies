@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class MovieDetails {
     private String title;
     private LocalDate releaseDate;

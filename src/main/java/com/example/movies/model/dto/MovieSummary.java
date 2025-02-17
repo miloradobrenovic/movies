@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class MovieSummary {
     private Long id;
     private String title;

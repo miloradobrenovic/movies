@@ -5,6 +5,7 @@ import com.example.movies.model.Movie;
 import com.example.movies.model.dto.MovieDetails;
 import com.example.movies.model.dto.MovieSummary;
 import com.example.movies.repository.MovieRepository;
+import com.example.movies.util.MovieMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,60 +21,33 @@ public class MovieService {
 
     @Autowired
     private MovieRepository movieRepository;
-
-    public List<MovieSummary> getPopularMovies() {
-        List<Movie> movies =movieRepository.findTop10ByOrderByRatingDesc();
-        return movies.stream()
-                .map(this::convertToMovieSummary)
-                .collect(Collectors.toList());
-    }
+    @Autowired
+    private MovieMapper movieMapper;
 
     public Page<MovieSummary> getPopularMovies(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Movie> moviesPage = movieRepository.findAllByOrderByRatingDesc(pageable);
-        return moviesPage.map(this::convertToMovieSummary);
+            Pageable pageable = PageRequest.of(page - 1, size);
+            Page<Movie> moviesPage = movieRepository.findTop50ByOrderByRatingDesc(pageable);
+            return moviesPage.map(movieMapper::convertToMovieSummary);
     }
 
-    public List<MovieSummary> searchMovies(String query) {
-        List<Movie> movies = movieRepository.findByTitleContainingIgnoreCase(query);
+    public List<MovieSummary> searchMovies(String query, String genre, Double rating, String sortBy) {
+
+        if (!List.of("rating", "release_date", "title").contains(sortBy.toLowerCase())) {
+            throw new IllegalArgumentException("Invalid sortBy parameter. Allowed values: rating, release_date, title");
+        }
+
+        Sort sort = ("title").equals(sortBy) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        List<Movie> movies = movieRepository.searchMovies(query, genre, rating, sort);
         return movies.stream()
-                .map(this::convertToMovieSummary)
+                .map(movieMapper::convertToMovieSummary)
                 .collect(Collectors.toList());
     }
 
     public MovieDetails getMovieDetails(Long id) throws ResourceNotFoundException {
         Movie movie = movieRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Movie not found with id: " + id));
-        return convertToMovieDetails(movie);
-    }
-
-    public Page<MovieSummary> searchMoviesWithSortAndFilters(
-            String query, String genre, String sortBy, int page, int size) {
-        Sort sort = Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
-        Page<Movie> moviesPage = movieRepository.searchMovies(query, genre, pageable);
-        return moviesPage.map(this::convertToMovieSummary);
-    }
-
-    private MovieDetails convertToMovieDetails(Movie movie) {
-        return new MovieDetails(
-                movie.getTitle(),
-                movie.getReleaseDate(),
-                movie.getPosterUrl(),
-                movie.getOverview(),
-                movie.getGenres(),
-                movie.getRating(),
-                movie.getRuntime(),
-                movie.getLanguage());
-    }
-
-    private MovieSummary convertToMovieSummary(Movie movie) {
-        return new MovieSummary(
-                movie.getId(),
-                movie.getTitle(),
-                movie.getReleaseDate(),
-                movie.getPosterUrl(),
-                movie.getRating());
+        return movieMapper.convertToMovieDetails(movie);
     }
 
 }
