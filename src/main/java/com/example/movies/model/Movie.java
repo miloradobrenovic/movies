@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "movies")
+@Table(name = "movies", uniqueConstraints = @UniqueConstraint(columnNames = "title"))
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
