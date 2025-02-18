@@ -14,14 +14,5 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: always
 
-  adminer:
-    image: adminer:latest
-    container_name: adminer
-    ports:
-      - "8080:8080"
-    restart: always
-    depends_on:
-      - db
-
 volumes:
   postgres_data:
