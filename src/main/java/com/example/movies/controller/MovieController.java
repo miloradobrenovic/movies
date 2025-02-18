@@ -24,14 +24,14 @@ public class MovieController {
     public Page<MovieSummary> getPopularMoviesByPage(
             @RequestParam(defaultValue = "1") int page,
             @Parameter(name = "api_key", required = true)
-            @RequestParam String api_key) {
+            @RequestHeader String api_key) {
         return movieService.getPopularMovies(page, 50);
     }
 
     @GetMapping("/{id}")
     public MovieDetails getMovieDetails(@PathVariable Long id,
                                         @Parameter(name = "api_key", required = true)
-                                        @RequestParam String api_key) throws Throwable {
+                                        @RequestHeader String api_key) throws Throwable {
         return movieService.getMovieDetails(id);
     }
 
@@ -48,7 +48,7 @@ public class MovieController {
                                schema = @Schema(allowableValues = {"rating", "release_date", "title"}))
             String sortBy,
             @Parameter(name = "api_key", required = true)
-            @RequestParam String api_key) {
+            @RequestHeader String api_key) {
         return movieService.searchMovies(query, genre, rating, sortBy);
     }
 

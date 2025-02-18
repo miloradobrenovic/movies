@@ -15,7 +15,7 @@ public class ApiKeyInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String requestApiKey = request.getParameter("api_key");
+        String requestApiKey = request.getHeader("api_key");
 
         if (requestApiKey == null || requestApiKey.isEmpty()) {
             throw new UnauthorizedException("API key is missing.");

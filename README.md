@@ -27,10 +27,10 @@ Database table Movie is initially populated with 56 entries on start of applicat
 
 API key description:
 
-API key system is implemented as a url parameter which will protect the endpoints from the unauthorized access.
+API key system is implemented as a header parameter which will protect the endpoints from the unauthorized access.
 Set your personal key in application.properties and use it for access to every endpoint defined in the project. (Default value 'mytoken' is set).
-If you put invalid api key in a request, appropriate error response will be returned with the message that api key is invalid.
-Attribute name is 'api_key', how it looks like in url is for example: http://localhost:8080/movies/10?api_key=mytoken
+If you put invalid api key in a request header, appropriate error response will be returned with the message that api key is invalid.
+Header Attribute name is 'api_key'
 
 
 
@@ -40,9 +40,10 @@ URL: /movies/{id}
 Required parameters: id, api_key
 
 URL examples:
-http://localhost:8080/movies/3?api_key=mytoken
-http://localhost:8080/movies/-1?api_key=mytoken
-Change token to something else to reproduce invalid api key error
+http://localhost:8080/movies/3
+http://localhost:8080/movies/-1
+
+Change token to something else to reproduce invalid api key error.
 
 Will return a movie details for a given id, in the following form:
 - Title
@@ -63,10 +64,11 @@ Required parameters: api_key
 Optional parameters: page (default one)
 
 URL examples:
-http://localhost:8080/movies/popular?page=1&api_key=mytoken
-http://localhost:8080/movies/popular?page=2&api_key=mytoken
-http://localhost:8080/movies/popular?page=3&api_key=mytoken
-http://localhost:8080/movies/popular?page=-1&api_key=mytoken
+http://localhost:8080/movies/popular?page=1
+http://localhost:8080/movies/popular?page=2
+http://localhost:8080/movies/popular?page=3
+http://localhost:8080/movies/popular?page=-1
+
 Change token to something else to reproduce invalid api key error
 
 E.g. If you enter a value 1 for a page, it will return a page of details of top 50 movies, or remaining movies if there are less then 50 (they will be sorted by rating), or empty page if there are no movies remaining.
@@ -86,10 +88,9 @@ Required parameters: query, api_key
 Optional parameters: genre, rating, sortBy (allowed values: rating, release_date, title; default value: rating)
 
 URL examples:
-http://localhost:8080/movies/search?query=inception&genre=action&rating=5&sortBy=rating&api_key=mytoken
-http://localhost:8080/movies/search?query=inception&sortBy=rating&api_key=mytoken
-http://localhost:8080/movies/search?query=in&rating=8&sortBy=release_date&api_key=mytoken
-
+http://localhost:8080/movies/search?query=inception&genre=action&rating=5&sortBy=rating
+http://localhost:8080/movies/search?query=inception&sortBy=rating
+http://localhost:8080/movies/search?query=in&rating=8&sortBy=release_date
 
 Change token to something else to reproduce invalid api key error
 
