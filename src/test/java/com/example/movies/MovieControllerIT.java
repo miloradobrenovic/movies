@@ -36,33 +36,37 @@ class MovieControllerIT {
 
     @BeforeEach
     void setUp() {
-        testMovie = new Movie(1L, "Inception", LocalDate.of(2010, 7, 16), "poster.jpg", "Overview", "Sci-Fi", 8.8, 148, "English");
+        testMovie = new Movie(9L, "Inception", LocalDate.of(2010, 7, 16), "poster.jpg", "Overview", "Sci-Fi", 8.8, 148, "English");
         movieRepository.save(testMovie);
     }
 
     @Test
     void getMovieDetailsShouldReturnMovieDetails() throws Exception {
-        mockMvc.perform(get("/movies/" + testMovie.getId() + "?api_key=" + apiKey))
+        mockMvc.perform(get("/movies/" + testMovie.getId())
+                .header("api_key", apiKey))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Inception"));
     }
 
     @Test
     void getPopularMoviesShouldReturnMovieSummaries() throws Exception {
-        mockMvc.perform(get("/movies/popular?api_key=" + apiKey))
+        mockMvc.perform(get("/movies/popular")
+                        .header("api_key", apiKey))
                 .andExpect(status().isOk());
     }
 
     @Test
     void searchMoviesShouldReturnFilteredMovies() throws Exception {
-        mockMvc.perform(get("/movies/search?query=Inception&api_key=" + apiKey))
+        mockMvc.perform(get("/movies/search?query=Inception")
+                        .header("api_key", apiKey))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value("Inception"));
     }
 
     @Test
     void getMovieDetailsShouldReturnNotFoundWhenMovieDoesNotExist() throws Exception {
-        mockMvc.perform(get("/movies/9999?api_key=" + apiKey))
+        mockMvc.perform(get("/movies/9999")
+                        .header("api_key", apiKey))
                 .andExpect(status().isNotFound());
     }
 
@@ -74,7 +78,8 @@ class MovieControllerIT {
 
     @Test
     void searchMoviesShouldReturnBadRequestWhenQueryIsMissing() throws Exception {
-        mockMvc.perform(get("/movies/search?api_key=" + apiKey))
+        mockMvc.perform(get("/movies/search")
+                        .header("api_key", apiKey))
                 .andExpect(status().isBadRequest());
     }
 }
